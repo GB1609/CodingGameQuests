@@ -1,3 +1,4 @@
+package shadowOfTheKnights
 
 import scala.io.StdIn.readLine
 
@@ -6,8 +7,7 @@ object Direction extends Enumeration {
   val U, UR, R, DR, D, DL, L, UL = Value
 }
 
-case class Remember(var minBatmanX: Int, var minBatmanY: Int, var maxBatmanX: Int, var maxBatmanY: Int,
-                    maxDimensionY: Int, maxDimensionX: Int) {
+case class Remember(var minBatmanX: Int, var minBatmanY: Int, var maxBatmanX: Int, var maxBatmanY: Int) {
 
   def update(position: (Int, Int)): Unit = {
     minBatmanX = if (position._2 < minBatmanX) position._2 else minBatmanX
@@ -17,7 +17,7 @@ case class Remember(var minBatmanX: Int, var minBatmanY: Int, var maxBatmanX: In
   }
 
   def print(): Unit = {
-    Console.err.println(f"MIN BATMAN X $minBatmanY")
+    Console.err.println(f"MIN BATMAN Y $minBatmanY")
     Console.err.println(f"MAX BATMAN Y $maxBatmanY")
     Console.err.println(f"MIN BATMAN X $minBatmanX")
     Console.err.println(f"MAX BATMAN X $maxBatmanX")
@@ -39,34 +39,34 @@ object Player extends App {
 
     direction match {
       case Direction.U =>
-        val newX = check(currentXBatman - 1, remember.minBatmanX, remember.maxBatmanX, remember.maxDimensionX)
+        val newX = check(currentXBatman - 1, remember.minBatmanX, remember.maxBatmanX, remember.maxBatmanX)
         (currentYBatman, newX)
       case Direction.UR =>
-        val newX = check(currentXBatman - 1, remember.minBatmanX, remember.maxBatmanX, remember.maxDimensionX)
-        val newY = check(currentYBatman + 1, remember.minBatmanY, remember.maxBatmanY, remember.maxDimensionY)
+        val newX = check(currentXBatman - 1, remember.minBatmanX, remember.maxBatmanX, remember.maxBatmanX)
+        val newY = check(currentYBatman + 1, remember.minBatmanY, remember.maxBatmanY, remember.maxBatmanY)
         (newY, newX)
       case Direction.R =>
-        val sumY = ((remember.maxDimensionY - currentYBatman) / 2) + 1
-        val newY = check(currentYBatman + sumY, remember.minBatmanY, remember.maxBatmanY, remember.maxDimensionY)
+        val sumY = ((remember.maxBatmanY - currentYBatman) / 2) + 1
+        val newY = check(currentYBatman + sumY, remember.minBatmanY, remember.maxBatmanY, remember.maxBatmanY)
         (newY, currentXBatman)
       case Direction.DR =>
-        val newX = check(currentXBatman + 1, remember.minBatmanX, remember.maxBatmanX, remember.maxDimensionX)
-        val newY = check(currentYBatman + 1, remember.minBatmanY, remember.maxBatmanY, remember.maxDimensionY)
+        val newX = check(currentXBatman + 1, remember.minBatmanX, remember.maxBatmanX, remember.maxBatmanX)
+        val newY = check(currentYBatman + 1, remember.minBatmanY, remember.maxBatmanY, remember.maxBatmanY)
         (newY, newX)
       case Direction.D =>
-        val sumX = ((remember.maxDimensionX - currentXBatman) / 2) + 1
-        val newX = check(currentXBatman + sumX, remember.minBatmanX, remember.maxBatmanX, remember.maxDimensionX)
+        val sumX = ((remember.maxBatmanX - currentXBatman) / 2) + 1
+        val newX = check(currentXBatman + sumX, remember.minBatmanX, remember.maxBatmanX, remember.maxBatmanX)
         (currentYBatman, newX)
       case Direction.DL =>
-        val newX = check(currentXBatman + 1, remember.minBatmanX, remember.maxBatmanX, remember.maxDimensionX)
-        val newY = check(currentYBatman - 1, remember.minBatmanY, remember.maxBatmanY, remember.maxDimensionY)
+        val newX = check(currentXBatman + 1, remember.minBatmanX, remember.maxBatmanX, remember.maxBatmanX)
+        val newY = check(currentYBatman - 1, remember.minBatmanY, remember.maxBatmanY, remember.maxBatmanY)
         (newY, newX)
       case Direction.L =>
-        val newY = check(currentYBatman - 1, remember.minBatmanY, remember.maxBatmanY, remember.maxDimensionY)
+        val newY = check(currentYBatman - 1, remember.minBatmanY, remember.maxBatmanY, remember.maxBatmanY)
         (newY, currentXBatman)
       case Direction.UL =>
-        val newX = check(currentXBatman - 1, remember.minBatmanX, remember.maxBatmanX, remember.maxDimensionX)
-        val newY = check(currentYBatman - 1, remember.minBatmanY, remember.maxBatmanY, remember.maxDimensionY)
+        val newX = check(currentXBatman - 1, remember.minBatmanX, remember.maxBatmanX, remember.maxBatmanX)
+        val newY = check(currentYBatman - 1, remember.minBatmanY, remember.maxBatmanY, remember.maxBatmanY)
         (newY, newX)
     }
 
@@ -78,8 +78,8 @@ object Player extends App {
   var maxJumps: Int = readLine.toInt
   val inputBatmanPosition: Array[Int] = readLine().split(" ").map(_.toInt)
   var batmanPosition: (Int, Int) = (inputBatmanPosition.head, inputBatmanPosition.last)
-  implicit val remember: Remember = Remember(batmanPosition._1, batmanPosition._2, batmanPosition._1, batmanPosition._2,
-    matrixDims._1 - 1, matrixDims._2 - 1)
+  implicit val remember: Remember = Remember(0, 0, matrixDims._2 - 1, matrixDims._1 - 1)
+  remember.print()
 
   // game loop
   while (true) {
@@ -89,7 +89,7 @@ object Player extends App {
     val newPosition = findBestPosition(directionValue.get, batmanPosition, maxJumps)
     maxJumps = maxJumps - 1
     batmanPosition = newPosition
-    remember.update(batmanPosition)
+    //    remember.update(batmanPosition)
     println(f"${newPosition._1} ${newPosition._2}")
   }
 }

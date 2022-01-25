@@ -5,15 +5,31 @@ import scala.io.StdIn.readLine
 object Direction extends Enumeration {
   type Direction = Value
   val U, UR, R, DR, D, DL, L, UL = Value
+
+  def up(direction: Direction.Direction): Boolean = {
+    direction.equals(U) || direction.equals(UL) || direction.equals(UR)
+  }
+
+  def down(direction: Direction.Direction): Boolean = {
+    direction.equals(D) || direction.equals(DL) || direction.equals(DR)
+  }
+
+  def left(direction: Direction.Direction): Boolean = {
+    direction.equals(L) || direction.equals(DL) || direction.equals(UL)
+  }
+
+  def right(direction: Direction.Direction): Boolean = {
+    direction.equals(R) || direction.equals(DR) || direction.equals(UR)
+  }
 }
 
 case class Remember(var minBatmanX: Int, var minBatmanY: Int, var maxBatmanX: Int, var maxBatmanY: Int) {
 
-  def update(position: (Int, Int)): Unit = {
-    minBatmanX = if (position._2 < minBatmanX) position._2 else minBatmanX
-    minBatmanY = if (position._1 < minBatmanY) position._1 else minBatmanY
-    maxBatmanX = if (position._2 > maxBatmanX) position._2 else maxBatmanX
-    maxBatmanY = if (position._1 > maxBatmanY) position._1 else maxBatmanY
+  def update(position: (Int, Int), direction: Direction.Direction): Unit = {
+    minBatmanX = if (position._2 < minBatmanX && Direction.up(direction)) position._2 else minBatmanX
+    minBatmanY = if (position._1 < minBatmanY && Direction.left(direction)) position._1 else minBatmanY
+    maxBatmanX = if (position._2 > maxBatmanX && Direction.down(direction)) position._2 else maxBatmanX
+    maxBatmanY = if (position._1 > maxBatmanY&& Direction.right(direction)) position._1 else maxBatmanY
   }
 
   def print(): Unit = {
@@ -46,7 +62,7 @@ object Player extends App {
         val newY = check(currentYBatman + 1, remember.minBatmanY, remember.maxBatmanY, remember.maxBatmanY)
         (newY, newX)
       case Direction.R =>
-        val sumY = ((remember.maxBatmanY - currentYBatman) / 2) + 1
+        val sumY = (Math.abs(remember.maxBatmanY - currentYBatman) / 2) + 1
         val newY = check(currentYBatman + sumY, remember.minBatmanY, remember.maxBatmanY, remember.maxBatmanY)
         (newY, currentXBatman)
       case Direction.DR =>
@@ -54,7 +70,7 @@ object Player extends App {
         val newY = check(currentYBatman + 1, remember.minBatmanY, remember.maxBatmanY, remember.maxBatmanY)
         (newY, newX)
       case Direction.D =>
-        val sumX = ((remember.maxBatmanX - currentXBatman) / 2) + 1
+        val sumX = Math.abs((remember.maxBatmanX - currentXBatman) / 2) + 1
         val newX = check(currentXBatman + sumX, remember.minBatmanX, remember.maxBatmanX, remember.maxBatmanX)
         (currentYBatman, newX)
       case Direction.DL =>
@@ -89,7 +105,7 @@ object Player extends App {
     val newPosition = findBestPosition(directionValue.get, batmanPosition, maxJumps)
     maxJumps = maxJumps - 1
     batmanPosition = newPosition
-    //    remember.update(batmanPosition)
+    remember.update(batmanPosition, directionValue.get)
     println(f"${newPosition._1} ${newPosition._2}")
   }
 }

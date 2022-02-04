@@ -1,4 +1,4 @@
-package test
+package clashOfCode
 
 import scala.io.StdIn._
 
